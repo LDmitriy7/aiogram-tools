@@ -6,7 +6,7 @@ from typing import Union, Callable, Awaitable, Optional
 
 from aiogram import types
 
-from aiogram_tools.states import State, StatesGroupMeta2, StatesGroup2
+from aiogram_tools._states import State, StatesGroupMeta2, StatesGroup2
 
 KeyboardMarkup = Union[
     types.ReplyKeyboardMarkup, types.InlineKeyboardMarkup, types.ForceReply

@@ -9,8 +9,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.dispatcher.storage import FSMContextProxy
 
-from aiogram_tools.questions import ConvState, ConvStatesGroup, ConvStatesGroupMeta
-from aiogram_tools.questions import Quest, Quests, QuestText, QuestFunc
+from aiogram_tools._questions import ConvState, ConvStatesGroup, ConvStatesGroupMeta
+from aiogram_tools._questions import Quest, Quests, QuestText, QuestFunc
 
 __all__ = ['UpdateData', 'UpdateUserState', 'AnswerOnReturn']
 

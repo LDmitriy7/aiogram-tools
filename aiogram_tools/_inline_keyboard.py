@@ -3,7 +3,7 @@ from aiogram.utils.helper import Item, Helper
 
 
 class InlineKeyboard(InlineKeyboardMarkup, Helper):
-    DATA_ROWS: list[Item or tuple[Item]] = []
+    DATA_ROWS: list[Item, tuple[Item]] = []
 
     def __init__(self, cdata_and_text: dict[str, str] = None, row_width=2):
         """Buttons in format: {callback_data:text} for DATA_ROWS."""
