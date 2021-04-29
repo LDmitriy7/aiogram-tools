@@ -8,7 +8,7 @@ from aiogram.types import InlineKeyboardButton, KeyboardButton
 
 
 class StorageDataFilter(BoundFilter):
-    """Check if all items match the relevant items in the storage (for current User+Chat)."""
+    """Check if all items matches the relevant items in the storage (for current User+Chat)."""
 
     key = 'storage'
 
@@ -18,8 +18,19 @@ class StorageDataFilter(BoundFilter):
 
     def is_matching(self, storage_data: dict) -> bool:
         for key, value in self.storage.items():
-            if key not in storage_data or value != storage_data[key]:
+            if key not in storage_data:
                 return False
+
+            if value == '*':
+                continue
+
+            if isinstance(value, (list, tuple, set)) and storage_data[key] in value:
+                continue
+
+            if storage_data[key] == value:
+                continue
+
+            return False
         return True
 
     async def check(self, *args) -> bool:
@@ -65,7 +76,7 @@ class _ButtonFilter(BoundFilter):
         if match:
             return {'button': match.groupdict()}
 
-    def check(self, obj) -> Union[dict, bool]:
+    async def check(self, obj) -> Union[dict, bool]:
         for regexp in self.buttons_regexps:
             result = self.check_one(obj, regexp)
             if result:

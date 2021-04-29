@@ -6,6 +6,7 @@ from bson import ObjectId
 
 T = TypeVar('T')
 
+# TODO: warning
 EmptyList = field(default_factory=list)
 EmptyDict = field(default_factory=dict)
 
