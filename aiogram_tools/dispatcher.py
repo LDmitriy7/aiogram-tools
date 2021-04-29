@@ -1,6 +1,8 @@
-from typing import TypeVar
+import asyncio
+from typing import TypeVar, Optional, List
 
 from aiogram import Dispatcher as _Dispatcher, executor
+from aiogram.types import base
 
 from aiogram_tools.filters import CallbackQueryButton, InlineQueryButton, MessageButton
 from aiogram_tools.filters import StorageDataFilter
@@ -47,12 +49,38 @@ class Dispatcher(_Dispatcher):
         payload = self._gen_payload(locals())
         executor.start_polling(self, **payload)
 
-    def run_webhook(self, webhook_path, *, loop=None, skip_updates=None,
+    def run_webhook(self, webhook_host, webhook_path, *, loop=None, skip_updates=None,
                     on_startup=None, on_shutdown=None, check_ip=False, retry_after=None,
                     route_name=executor.DEFAULT_ROUTE_NAME,
+                    certificate: Optional[base.InputFile] = None,
+                    ip_address: Optional[base.String] = None,
+                    max_connections: Optional[base.Integer] = None,
+                    allowed_updates: Optional[List[base.String]] = None,
                     **kwargs):
-        payload = self._gen_payload(locals())
-        executor.start_webhook(self, **payload)
+        loop = self.loop or asyncio.get_event_loop()
+        webhook_task = loop.create_task(self.bot.set_webhook(
+            webhook_host + webhook_path,
+            certificate=certificate,
+            ip_address=ip_address,
+            max_connections=max_connections,
+            allowed_updates=allowed_updates,
+            drop_pending_updates=skip_updates,
+        ))
+        if not loop.is_running():
+            loop.run_until_complete(webhook_task)
+
+        executor.start_webhook(
+            self,
+            webhook_path=webhook_path,
+            loop=loop,
+            skip_updates=skip_updates,
+            on_startup=on_startup,
+            on_shutdown=on_shutdown,
+            check_ip=check_ip,
+            retry_after=retry_after,
+            route_name=route_name,
+            **kwargs
+        )
 
     def message_handler(self, *custom_filters, text=None, commands=None, regexp=None, button=None,
                         content_types=None, chat_type=None, state=None, storage=None,
