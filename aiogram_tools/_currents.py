@@ -7,8 +7,9 @@ import inspect
 from typing import Optional, Any, Awaitable, Callable
 
 from aiogram import types, Dispatcher as Dispatcher, Bot as Bot
-from aiogram_tools._states import State, StatesGroup2
 from aiogram.utils.mixins import ContextInstanceMixin
+
+from aiogram_tools._states import State, StatesGroup2
 
 __all__ = ['CurrentObjects']
 

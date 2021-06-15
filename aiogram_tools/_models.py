@@ -1,5 +1,7 @@
 """Contain all data models."""
-from dataclasses import dataclass, field, fields, asdict, Field, is_dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, field, fields, asdict, Field
 from typing import Union, TypeVar
 
 from bson import ObjectId

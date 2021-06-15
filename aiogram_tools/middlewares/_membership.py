@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from aiogram import types, Bot
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware

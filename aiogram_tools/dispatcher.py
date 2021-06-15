@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import asyncio
 from typing import TypeVar, Optional, List
 
 from aiogram import Dispatcher as _Dispatcher, executor
-from aiogram.types import base
 from aiogram import types
+from aiogram.types import base
+
 from aiogram_tools.filters import CallbackQueryButton, InlineQueryButton, MessageButton
 from aiogram_tools.filters import StorageDataFilter
 
