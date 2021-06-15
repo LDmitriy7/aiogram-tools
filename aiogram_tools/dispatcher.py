@@ -3,7 +3,7 @@ from typing import TypeVar, Optional, List
 
 from aiogram import Dispatcher as _Dispatcher, executor
 from aiogram.types import base
-
+from aiogram import types
 from aiogram_tools.filters import CallbackQueryButton, InlineQueryButton, MessageButton
 from aiogram_tools.filters import StorageDataFilter
 
@@ -112,3 +112,75 @@ class Dispatcher(_Dispatcher):
                        run_task=None, **kwargs):
         payload = self._gen_payload(locals(), exclude=['custom_filters'])
         return super().inline_handler(*custom_filters, **payload)
+
+    async def process_update(self, update: types.Update):
+        """
+        Process single update object
+
+        :param update:
+        :return:
+        """
+        types.Update.set_current(update)
+
+        try:
+            if update.message:
+                types.Message.set_current(update.message)
+                types.User.set_current(update.message.from_user)
+                types.Chat.set_current(update.message.chat)
+                return await self.message_handlers.notify(update.message)
+            if update.edited_message:
+                types.Message.set_current(update.edited_message)
+                types.User.set_current(update.edited_message.from_user)
+                types.Chat.set_current(update.edited_message.chat)
+                return await self.edited_message_handlers.notify(update.edited_message)
+            if update.channel_post:
+                types.Message.set_current(update.channel_post)
+                types.Chat.set_current(update.channel_post.chat)
+                return await self.channel_post_handlers.notify(update.channel_post)
+            if update.edited_channel_post:
+                types.Message.set_current(update.edited_channel_post)
+                types.Chat.set_current(update.edited_channel_post.chat)
+                return await self.edited_channel_post_handlers.notify(update.edited_channel_post)
+            if update.inline_query:
+                types.InlineQuery.set_current(update.inline_query)
+                types.User.set_current(update.inline_query.from_user)
+                return await self.inline_query_handlers.notify(update.inline_query)
+            if update.chosen_inline_result:
+                types.ChosenInlineResult.set_current(update.chosen_inline_result)
+                types.User.set_current(update.chosen_inline_result.from_user)
+                return await self.chosen_inline_result_handlers.notify(update.chosen_inline_result)
+            if update.callback_query:
+                types.CallbackQuery.set_current(update.callback_query)
+                if update.callback_query.message:
+                    types.Message.set_current(update.callback_query.message)
+                    types.Chat.set_current(update.callback_query.message.chat)
+                types.User.set_current(update.callback_query.from_user)
+                return await self.callback_query_handlers.notify(update.callback_query)
+            if update.shipping_query:
+                types.ShippingQuery.set_current(update.shipping_query)
+                types.User.set_current(update.shipping_query.from_user)
+                return await self.shipping_query_handlers.notify(update.shipping_query)
+            if update.pre_checkout_query:
+                types.PreCheckoutQuery.set_current(update.pre_checkout_query)
+                types.User.set_current(update.pre_checkout_query.from_user)
+                return await self.pre_checkout_query_handlers.notify(update.pre_checkout_query)
+            if update.poll:
+                types.Poll.set_current(update.poll)
+                return await self.poll_handlers.notify(update.poll)
+            if update.poll_answer:
+                types.PollAnswer.set_current(update.poll_answer)
+                types.User.set_current(update.poll_answer.user)
+                return await self.poll_answer_handlers.notify(update.poll_answer)
+            if update.my_chat_member:
+                types.ChatMemberUpdated.set_current(update.my_chat_member)
+                types.User.set_current(update.my_chat_member.from_user)
+                return await self.my_chat_member_handlers.notify(update.my_chat_member)
+            if update.chat_member:
+                types.ChatMemberUpdated.set_current(update.chat_member)
+                types.User.set_current(update.chat_member.from_user)
+                return await self.chat_member_handlers.notify(update.chat_member)
+        except Exception as e:
+            err = await self.errors_handlers.notify(update, e)
+            if err:
+                return err
+            raise

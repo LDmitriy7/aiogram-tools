@@ -1,5 +1,6 @@
 import re
 from abc import abstractmethod
+from contextlib import suppress
 from typing import Optional, Union
 
 from aiogram import types
@@ -72,9 +73,10 @@ class _ButtonFilter(BoundFilter):
 
     def check_one(self, obj, button_regexp: str) -> Optional[dict]:
         obj_data = self.cast_update(obj)
-        match = re.fullmatch(button_regexp, obj_data)
-        if match:
-            return {'button': match.groupdict()}
+        with suppress(TypeError):
+            match = re.fullmatch(button_regexp, obj_data)
+            if match:
+                return {'button': match.groupdict()}
 
     async def check(self, obj) -> Union[dict, bool]:
         for regexp in self.buttons_regexps:
